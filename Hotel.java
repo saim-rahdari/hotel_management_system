@@ -1,4 +1,5 @@
 import java.util.*;
+import java.io.*;
 import java.util.regex.Pattern;
 
 public class Hotel{
@@ -209,7 +210,6 @@ public class Hotel{
                     room_no = (((int) (Math.random()*(50 - 21))) + 21);
                         if(list.size() == 0){
                             list.add(room_no);
-                            System.out.println(list);
                             room_check = false;
                         }
                         else if(list.contains(room_no))
@@ -233,7 +233,6 @@ public class Hotel{
                     room_no = (((int) (Math.random()*(90 - 51))) + 51);
                         if(list.size() == 0){
                             list.add(room_no);
-                            System.out.println(list);
                             room_check = false;
                         }
                         else if(list.contains(room_no))
@@ -257,7 +256,6 @@ public class Hotel{
                     room_no = (((int) (Math.random()*(120 - 91))) + 91);
                         if(list.size() == 0){
                             list.add(room_no);
-                            System.out.println(list);
                             room_check = false;
                         }
                         else if(list.contains(room_no))
@@ -401,16 +399,100 @@ public class Hotel{
     restaurantbill();
     }
 
-    public static void totalcost(){
+    public static void totalcost() throws IOException {
         System.out.println("You have been checkout out!");
         System.out.println("Total Cost = " + cost[id]);
         System.out.println("Thanks for using our Hotel Management System!");
+
+        BufferedWriter bw = new BufferedWriter( new FileWriter("hotel_db.txt",true));
+
+    		bw.write(name[id]+","+list_ids.get(id)+","+address[id]+","+cost[id]);
+    		bw.flush();
+    		bw.newLine();
+    		bw.close();
         id++;
         panels();
     }
 
+    public static void admin_update_record(){
+
+    }
+
+    public static void admin_search_record(){
+
+    }
+
+    public static void admin_view_record() throws IOException{
+            BufferedReader br = new BufferedReader( new FileReader("hotel_db.txt") );
+                
+            String record;
+                
+            System.out.println(" ------------------------------------------------------------- ");
+            System.out.println("|	Name		CNIC 			Address			Total Cost    |");
+            System.out.println(" ------------------------------------------------------------- ");
+                
+            while( (record = br.readLine() ) != null) {
+                    
+                StringTokenizer st = new StringTokenizer(record,",");
+                    
+                System.out.println("|	"+st.nextToken()+"     "+st.nextToken()+" 		"+st.nextToken()+"       "+st.nextToken()+"      |");
+        
+            }
+                
+            System.out.println("|	                                            	          |");
+            System.out.println(" ------------------------------------------------------------- ");
+            br.close();    		
+    }
+
+    public static void admin_delete_record(){
+
+    }
+
     public static void admin_panel(){
-        //add delete edit customer select
+        Scanner input = new Scanner(System.in);
+        String userName, password;
+        boolean check = true;
+        char ch;
+        try {
+            System.out.println("Enter UserName: ");
+            userName = input.next();
+            System.out.println("Enter Password: ");
+            password = input.next();
+            if (userName.trim().equals("admin") && password.trim().equals("admin")) {
+                System.out.println(" Hello " + userName + "");
+                while(check){
+                    System.out.println();
+                    System.out.println("1. Update Record");
+                    System.out.println("2. View All Records");
+                    System.out.println("3. Search Record");
+                    System.out.println("4. Delete Record");
+                    System.out.println("Press any other key to exit");
+                    ch = input.next().charAt(0);
+                    try {
+                    if(ch == '1')
+                        admin_update_record();
+                    else if(ch == '2')
+                        admin_view_record();
+                    else if(ch == '3')
+                        admin_search_record();
+                    else if(ch == '4')
+                        admin_delete_record();
+                    else {
+                        panels();
+                        return;
+                    }
+                }
+                    catch(IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+             } else
+                System.out.println(" Invalid user.. ");
+        }
+         catch (InputMismatchException e) {
+            System.out.println("Invalid Input!");
+            input.next();
+         }	
     }
 
     public static void main_menu_customer(){
@@ -437,7 +519,12 @@ public class Hotel{
                 restaurantbill();
                 break;
             case '4':
-                totalcost();
+                try {
+                    totalcost();
+            }
+                catch(IOException e) {
+                e.printStackTrace();
+            }
                 break;
             default:
                 System.exit(0);
