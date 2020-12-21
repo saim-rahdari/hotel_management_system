@@ -1,6 +1,4 @@
-import java.util.ArrayList;
-import java.util.Random;
-import java.util.Scanner;
+import java.util.*;
 
 public class Hotel{
     static int id = 0, room_count = 0;
@@ -11,6 +9,7 @@ public class Hotel{
     static String[] address = new String[MAX_CUSTOMERS];
     static int[] month = new int[MAX_CUSTOMERS];
     static int[] day = new int[MAX_CUSTOMERS];
+    static int[] year = new int[MAX_CUSTOMERS];
     static long[] ids = new long[MAX_CUSTOMERS];
     static ArrayList<Integer> list = new ArrayList<Integer>();
 
@@ -24,45 +23,77 @@ public class Hotel{
     public static void customer_panel(){
         Scanner input = new Scanner(System.in);
         String add;
-        int len;
+        int len = 0;
         boolean idc = true;
         room_count = 0;
 
         System.out.println("Enter your Name:");
         name[id] = input.nextLine();
 
-        while(idc){
-        System.out.println("Enter Day of Stay:");
-        day[id] = input.nextInt();
-        if(day[id] >= 1 && day[id] <= 31)
-            idc = false;
-        else
-            System.out.println("Invalid Day!");
-    }
-        idc = true;
-        while(idc){
-        System.out.println("Enter Month of Stay:");
-        month[id] = input.nextInt();
-        if(month[id] > 0 && month[id] < 13)
-            idc = false;
-        else 
-            System.out.println("Invalid Month!");
-    }
+        do {
+            System.out.println("Enter Day of Stay: ");
+             try {
+                day[id] = input.nextInt();
+                 if (!(day[id] >= 1 && day[id] <= 31)) {
+                    System.out.println("Not a valid Input.");
+                 }
+             }
+             catch (InputMismatchException e) {
+                System.out.println("Must enter an integer!");
+                input.next();
+             }	
+         } while (!(day[id] >= 1 && day[id] <= 31));
+
+
+         do {
+            System.out.println("Enter Month of Stay: ");
+             try {
+                month[id] = input.nextInt();
+                 if (!(month[id] > 0 && month[id] < 13)) {
+                    System.out.println("Not a valid Input.");
+                 }
+             }
+             catch (InputMismatchException e) {
+                System.out.println("Must enter an integer!");
+                input.next();
+             }	
+         } while (!(month[id] > 0 && month[id] < 13));
+
+
+         do {
+            System.out.println("Enter Year of Stay: ");
+             try {
+                month[id] = input.nextInt();
+                 if (!(year[id] > 1950 && year[id] < 2050)) {
+                    System.out.println("Not a valid Input.");
+                 }
+             }
+             catch (InputMismatchException e) {
+                System.out.println("Must enter an integer!");
+                input.next();
+             }	
+         } while (!(year[id] > 1950 && year[id] < 2050));
+
 
         System.out.println("Enter your adress:");
         add = input.nextLine();
         address[id] = input.nextLine();
 
-        idc = true;
-        while (idc){
+        do {
             System.out.println("Enter your CNIC without Dashes(-): ");
-            ids[id] = input.nextLong();
-            len = String.valueOf(ids[id]).length();
-            if (len == 13)
-                idc = false;
-            else
-                System.out.println("Invalid CNIC Number");
-        }
+             try {
+                ids[id] = input.nextLong();
+                len = String.valueOf(ids[id]).length();
+                 if (!(len == 13)) {
+                    System.out.println("Not a valid Input.");
+                 }
+             }
+             catch (InputMismatchException e) {
+                System.out.println("Must enter an integer!");
+                input.next();
+             }	
+         } while (!(len == 13));
+
         cost[id] = 0;
         main_menu_customer();
     }
@@ -409,4 +440,9 @@ public class Hotel{
 /**
  * admin to show details//edit details///delete user
  * store data in files
+ * 
+ * cnic different check
+ * laundry and restaurant again laundry and restarant
+ * room cancelation
+ * branches na ho ya ho
  */
