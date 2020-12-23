@@ -11,7 +11,7 @@ public class Hotel{
     static int[] month = new int[MAX_CUSTOMERS];
     static int[] day = new int[MAX_CUSTOMERS];
     static int[] year = new int[MAX_CUSTOMERS];
-    static long[] contacts = new long[MAX_CUSTOMERS];
+    static String[] contacts = new String[MAX_CUSTOMERS];
     static ArrayList<String> list_ids = new ArrayList<String>(MAX_CUSTOMERS);
     static ArrayList<Integer> list = new ArrayList<Integer>();
 
@@ -40,7 +40,7 @@ public class Hotel{
         String cnic = "";
         boolean check = true;
         while(check){
-        System.out.println("Enter your CNIC");
+        System.out.println("Enter your CNIC Without Dashes(-)");
         try
         {   cnic = input.nextLine();
             if (isValidCNIC(cnic) && !isValidCNIC2(cnic)) {
@@ -58,14 +58,14 @@ public class Hotel{
     public static void customer_panel(){
         Scanner input = new Scanner(System.in);
         String add;
-        boolean idc = true;
+        boolean idc = true, check = true;
         room_count = 0;
         int length_con = 0;
 
         System.out.println("Enter your Name:");
         name[id] = input.nextLine();
         do {
-            System.out.println("Enter Day of Stay: ");
+            System.out.println("Enter Day of Stay(1-31): ");
              try {
                 day[id] = input.nextInt();
                  if (!(day[id] >= 1 && day[id] <= 31)) {
@@ -80,7 +80,7 @@ public class Hotel{
 
 
          do {
-            System.out.println("Enter Month of Stay: ");
+            System.out.println("Enter Month of Stay (1-12): ");
              try {
                 month[id] = input.nextInt();
                  if (!(month[id] > 0 && month[id] < 13)) {
@@ -115,20 +115,15 @@ public class Hotel{
 
         setCNIC();
 
-        do {
-            System.out.println("Enter your Contact Number : ");
-             try {
-                contacts[id] = input.nextLong();
-                length_con = (int) (Math.log10(contacts[id]) + 2);
-                 if (!(length_con == 11)) {
-                    System.out.println("Not a valid Input.");
-                 }
-             }
-             catch (InputMismatchException e) {
-                System.out.println("Must enter an integer!");
-                input.next();
-             }	
-         } while (!(length_con == 11));
+        while(check){
+            System.out.println("Enter your Contact No. : ");
+            contacts[id] = input.next();
+    
+            if (contacts[id].length() == 11 && (contacts[id].substring(0,2).equals("03")))
+                check = false;
+            else
+                System.out.println("Invalid Contact Number");
+        }
 
         cost[id] = 0;
         main_menu_customer();
@@ -138,7 +133,9 @@ public class Hotel{
         Scanner input = new Scanner(System.in);
         int room = 0, ind = 0;
         System.out.println(list);
+        System.out.println(" ---------------------------------------------------------- ");
         System.out.println("\tROOM CANCELATION MENU");
+        System.out.println(" ---------------------------------------------------------- ");
         System.out.println();
         do {
             System.out.println("Enter your Room Number to Cancel: ");
@@ -179,7 +176,9 @@ public class Hotel{
         int rent = 0, nights,room_no;
         char inp;
         boolean check = true, room_check = true;
+        System.out.println(" ---------------------------------------------------------- ");
         System.out.println("\tROOM SELECTION MENU");
+        System.out.println(" ---------------------------------------------------------- ");
         while(check){
 
             System.out.println("We have " + MAX_ROOMS + " ROOMS LEFT! HURRY UP!");
@@ -308,8 +307,10 @@ public class Hotel{
         Scanner input = new Scanner(System.in);
         int t_cost = 0, no_laundry;
         char inp;
-        boolean check = true;
+        boolean check = true;        
+        System.out.println(" ---------------------------------------------------------- ");
         System.out.println("\tLAUNDRY SELECTION MENU");
+        System.out.println(" ---------------------------------------------------------- ");
 
         while(check){
             System.out.println("Press 1 for Shirts");
@@ -363,7 +364,9 @@ public class Hotel{
         int t_cost = 0, no_res;
         char inp;
         boolean check = true;
+        System.out.println(" ---------------------------------------------------------- ");
         System.out.println("\tWELCOME TO OUR RESTAURANT");
+        System.out.println(" ---------------------------------------------------------- ");
 
         while(check){
             System.out.println("Press 1 for Water ---------- RS10");
@@ -377,25 +380,25 @@ public class Hotel{
             if(inp == '1'){
                 System.out.println("Enter the quantity: ");
                 no_res = input.nextInt();
-                t_cost = no_res * 1;
+                t_cost = no_res * 10;
                 check = false;
             }
             else if(inp == '2'){
                 System.out.println("Enter the quantity: ");
                 no_res = input.nextInt();
-                t_cost = no_res * 15;
+                t_cost = no_res * 150;
                 check = false;
             }
             else if(inp == '3'){
                 System.out.println("Enter the quantity: ");
                 no_res = input.nextInt();
-                t_cost = no_res * 30;
+                t_cost = no_res * 300;
                 check = false;
             }
             else if(inp == '4'){
                 System.out.println("Enter the quantity: ");
                 no_res = input.nextInt();
-                t_cost = no_res * 50;
+                t_cost = no_res * 500;
                 check = false;
             }
             else if(inp == '5'){
@@ -413,8 +416,10 @@ public class Hotel{
     }
 
     public static void totalcost() throws IOException {
-        System.out.println("You have been checkout out!");
+        System.out.println("You have been checked out!");
+        System.out.println();
         System.out.println("Total Cost = " + cost[id]);
+        System.out.println();
         System.out.println("Thanks for using our Hotel Management System!");
 
         BufferedWriter bw = new BufferedWriter( new FileWriter("hotel_db.txt",true));
@@ -429,7 +434,10 @@ public class Hotel{
 
     public static void admin_update_record() throws IOException{
 
-            String newName, newAddr, newCost, newContact, record, ID,record2;
+            String newName, newAddr, newCost, newContact = "", record, ID,record2;
+
+            boolean check = true;
+            int len = 0;
                 
             File db = new File("hotel_db.txt");
             File tempDB = new File("hotel_db_temp.txt");
@@ -439,7 +447,10 @@ public class Hotel{
                         
             Scanner input = new Scanner(System.in);
             
+            System.out.println(" ---------------------------------------------------------- ");
             System.out.println("\t\t Update Customer Record\n\n"); 
+            System.out.println(" ---------------------------------------------------------- ");
+
             System.out.println("Enter the Customer CNIC: ");
             ID = input.nextLine();	    		
             System.out.println(" ------------------------------------------------------------------------------------- ");
@@ -462,8 +473,17 @@ public class Hotel{
         newName = input.nextLine();    		
         System.out.println("Enter the new Address: ");
         newAddr = input.nextLine();
-        System.out.println("Enter the new Contact No.:");
-        newContact = input.nextLine();
+
+        while(check){
+        System.out.println("Enter the new Contact No. :");
+        newContact = input.next();
+
+        if (newContact.length() == 11)
+            check = false;
+        else
+            System.out.println("Invalid Contact Number");
+    }
+
         System.out.println("Enter the new Total Cost: ");
         newCost = input.nextLine();  
         
@@ -491,8 +511,10 @@ public class Hotel{
         Scanner input = new Scanner(System.in);
         
         BufferedReader br = new BufferedReader( new FileReader("hotel_db.txt") );
-        
+
+        System.out.println(" ---------------------------------------------------------- ");        
         System.out.println("\t\t Search Customer Record\n");
+        System.out.println(" ---------------------------------------------------------- ");
     
         
         System.out.println("Enter the Customer CNIC: ");
@@ -548,9 +570,10 @@ public class Hotel{
     		BufferedReader br = new BufferedReader( new FileReader( db ) );
     		BufferedWriter bw = new BufferedWriter( new FileWriter( tempDB ) );
     		
-    		
+            System.out.println(" ---------------------------------------------------------- ");
     		System.out.println("\t\t DELETE CUSTOMER RECORD\n");
-    		
+            System.out.println(" ---------------------------------------------------------- ");
+
     		System.out.println("Enter the Customer's CNIC: ");
     		ID =  input.nextLine();
     		
@@ -581,13 +604,13 @@ public class Hotel{
         boolean check = true;
         char ch;
         try {
-            System.out.println("Enter UserName: ");
+            System.out.println("Enter Username: ");
             userName = input.next();
             System.out.println("Enter Password: ");
             password = input.next();
             if (userName.trim().equals("admin") && password.trim().equals("admin")) {
                 System.out.println();
-                System.out.println("Hello " + userName + "");
+                System.out.println("Hello " + userName);
                 while(check){
                     System.out.println();
                     System.out.println("1. Update Record");
@@ -615,7 +638,7 @@ public class Hotel{
                     }
                 }
              } else
-                System.out.println(" Invalid user.. ");
+                System.out.println(" Invalid user... ");
         }
          catch (InputMismatchException e) {
             System.out.println("Invalid Input!");
@@ -627,8 +650,10 @@ public class Hotel{
         Scanner input = new Scanner(System.in);
         char choice;
         System.out.println();
+        System.out.println(" --------------------------------------------------------------- ");
         System.out.println("          \t             WELCOME TO THE MAIN MENU       ");
-        System.out.println("\t           _________________________________________");
+        System.out.println(" --------------------------------------------------------------- ");
+
         System.out.println();
         System.out.println(" Press 1 for Room Selection and Rent Menu\t   Press 2 for Laundry Menu\n\n Press 3 for Restaurant Menu\t\t\t   Press 4 to Checkout \n\n\t\t         Press any other key to exit: ");
         choice = input.next().charAt(0);
@@ -690,13 +715,14 @@ public class Hotel{
     }
     public static void main(String[] args){
         Scanner input = new Scanner(System.in);
-        char branch, confirm = 'y', choice;
+        char branch, confirm = 'y';
         System.out.println();
+        System.out.println(" ---------------------------------------------------------------- ");
         System.out.println("                 WELCOME TO OUR HOTEL           ");
-        System.out.println("________________________________________________");
+        System.out.println(" ---------------------------------------------------------------- ");
         while(confirm == 'y') {
         System.out.println();
-        System.out.println("Press 1 for Isamabad Branch\nPress 2 for Lahore Branch\nPress 3 for Karachi Branch: ");
+        System.out.println("Press 1 for Islamabad Branch\nPress 2 for Lahore Branch\nPress 3 for Karachi Branch: ");
         branch = input.next().charAt(0); 
         if(branch == '1'){
             System.out.println("You opted for ISLAMABAD BRANCH");
@@ -720,9 +746,7 @@ public class Hotel{
     }
 }
 
-
 /**
  * 
- * contact No add
- *
- **/
+ * contact number to string
+ */
