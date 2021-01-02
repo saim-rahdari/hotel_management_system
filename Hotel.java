@@ -5,7 +5,8 @@ import java.util.regex.Pattern;
 public class Hotel{
     static int id = 0, room_count = 0, room_rent_temp = 0, MAX_CUSTOMERS = 100, MAX_ROOMS = 100;
     static long cnic = 0;
-    static int[] cost = new int[MAX_CUSTOMERS];
+    static char branch;
+    static int[] cost = new int[MAX_CUSTOMERS]; 
     static String[] name = new String[MAX_CUSTOMERS];
     static String[] address = new String[MAX_CUSTOMERS];
     static int[] month = new int[MAX_CUSTOMERS];
@@ -17,7 +18,7 @@ public class Hotel{
 
     static boolean isValidCNIC(String cnic) {
         if (Pattern.matches("[a-zA-Z]+", cnic) == false && cnic.length() == 13) {
-                   return true;
+                return true;
         } else
         return false;
     }
@@ -53,60 +54,81 @@ public class Hotel{
             System.out.println("Invalid CNIC Number");
         }
     }
+}
+
+
+    static boolean check_special(String inputString){
+        String specialCharactersString = "!@#$%&*()'+,-./:;<=>?[]^_`{|}";
+        for (int i=0; i < inputString.length() ; i++)
+        {
+            char ch = inputString.charAt(i);
+            if(specialCharactersString.contains(Character.toString(ch))) {
+                return true;
+            }    
+            else if(i == inputString.length()-1)     
+                return false;
+        }
+        return false;
     }
 
     public static void customer_panel(){
         Scanner input = new Scanner(System.in);
         String add;
-        boolean idc = true, check = true;
+        boolean check = true;
         room_count = 0;
-        int length_con = 0;
 
+        while(check){
         System.out.println("Enter your Name:");
         name[id] = input.nextLine();
+        if(check_special(name[id]))
+            System.out.println("Invalid Name!");
+        else
+            check = false;
+    }
+
         do {
             System.out.println("Enter Day of Stay(1-31): ");
-             try {
+            try {
                 day[id] = input.nextInt();
-                 if (!(day[id] >= 1 && day[id] <= 31)) {
+                if (!(day[id] >= 1 && day[id] <= 31)) {
                     System.out.println("Not a valid Input.");
-                 }
-             }
-             catch (InputMismatchException e) {
+                }
+            }
+            catch (InputMismatchException e) {
                 System.out.println("Must enter an integer!");
                 input.next();
-             }	
-         } while (!(day[id] >= 1 && day[id] <= 31));
+            }	
+        } while (!(day[id] >= 1 && day[id] <= 31));
 
 
-         do {
+        do {
             System.out.println("Enter Month of Stay (1-12): ");
-             try {
+            try {
                 month[id] = input.nextInt();
-                 if (!(month[id] > 0 && month[id] < 13)) {
+                if (!(month[id] > 0 && month[id] < 13)) {
                     System.out.println("Not a valid Input.");
-                 }
-             }
-             catch (InputMismatchException e) {
+                }
+            }
+            catch (InputMismatchException e) {
                 System.out.println("Must enter an integer!");
                 input.next();
-             }	
-         } while (!(month[id] > 0 && month[id] < 13));
+            }	
+        } while (!(month[id] > 0 && month[id] < 13));
 
 
-         do {
+        do {
             System.out.println("Enter Year of Stay: ");
-             try {
+            try {
                 year[id] = input.nextInt();
-                 if (!(year[id] == 2020 || year[id] == 2021)) {
+                if (!(year[id] == 2020 || year[id] == 2021)) {
                     System.out.println("Not a valid Input.");
-                 }
-             }
-             catch (InputMismatchException e) {
+                }
+            }
+            catch (InputMismatchException e) {
                 System.out.println("Must enter an integer!");
                 input.next();
-             }	
-         } while (!(year[id] == 2020 || year[id] == 2021));
+            }	
+        } while (!(year[id] == 2020 || year[id] == 2021));
 
 
         System.out.println("Enter your adress:");
@@ -115,11 +137,13 @@ public class Hotel{
 
         setCNIC();
 
+        check = true;
+
         while(check){
             System.out.println("Enter your Contact No. : ");
             contacts[id] = input.next();
     
-            if (contacts[id].length() == 11 && (contacts[id].substring(0,2).equals("03")))
+            if (contacts[id].length() == 11 && (contacts[id].substring(0,2).equals("03")) && !check_special(contacts[id]))
                 check = false;
             else
                 System.out.println("Invalid Contact Number");
@@ -141,7 +165,7 @@ public class Hotel{
             System.out.println("Enter your Room Number to Cancel: ");
             try {
                 room = input.nextInt();
-                 if (!(room > 0 && room <120))
+                if (!(room > 0 && room <120))
                     System.out.println("Not a valid Input.");
                 else {
                     if(list.contains(room)){
@@ -155,11 +179,11 @@ public class Hotel{
                     }
                 }
             }
-             catch (InputMismatchException e) {
+            catch (InputMismatchException e) {
                 System.out.println("Must enter an integer!");
                 input.next();
-             }	
-         } while (!(room > 0 && room <120));
+            }	
+        } while (!(room > 0 && room <120));
     }
 
     public static void roomselection_rent(){
@@ -424,20 +448,21 @@ public class Hotel{
 
         BufferedWriter bw = new BufferedWriter( new FileWriter("hotel_db.txt",true));
 
-    		bw.write(name[id]+"|"+list_ids.get(id)+"|"+address[id]+"|"+contacts[id]+"|"+cost[id]);
-    		bw.flush();
-    		bw.newLine();
-    		bw.close();
+    	bw.write(name[id]+"|"+list_ids.get(id)+"|"+address[id]+"|"+contacts[id]+"|"+cost[id]);
+    	bw.flush();
+    	bw.newLine();
+    	bw.close();
         id++;
         panels();
     }
 
     public static void admin_update_record() throws IOException{
 
-            String newName, newAddr, newCost, newContact = "", record, ID,record2;
+            String newName = "", newAddr, newContact = "", record, ID,record2;
+
+            int newC = 0;
 
             boolean check = true;
-            int len = 0;
                 
             File db = new File("hotel_db.txt");
             File tempDB = new File("hotel_db_temp.txt");
@@ -448,50 +473,74 @@ public class Hotel{
             Scanner input = new Scanner(System.in);
             
             System.out.println(" ---------------------------------------------------------- ");
-            System.out.println("\t\t Update Customer Record\n\n"); 
+            System.out.println("\t\t Update Customer Record"); 
             System.out.println(" ---------------------------------------------------------- ");
+            System.out.println();
 
             System.out.println("Enter the Customer CNIC: ");
             ID = input.nextLine();	    		
-            System.out.println(" ------------------------------------------------------------------------------------- ");
-            System.out.println("|	Name		CNIC 			Address 			Contact No.			Total Cost	  |");
-            System.out.println(" ------------------------------------------------------------------------------------- ");
-            
-            while( ( record = br.readLine() ) != null ) {
-                
+            System.out.println(" --------------------------------------------------------------------------------------------------------------- ");
+            System.out.println("|\tName\t\tCNIC\t\t\tAddress\t\t\tContact No.\t\tTotal Cost\t|");
+            System.out.println(" --------------------------------------------------------------------------------------------------------------- ");
+           
+            while( (record = br.readLine()) != null) {
                 StringTokenizer st = new StringTokenizer(record,"|");
                 if( record.contains(ID) ) {
-                    System.out.println("|	"+st.nextToken()+"	"+st.nextToken()+" 		"+st.nextToken()+" 		"+st.nextToken()+"			"+st.nextToken()+"      |");
+                    System.out.println("|\t"+st.nextToken()+"\t\t"+st.nextToken()+"\t\t"+st.nextToken()+"\t\t\t"+st.nextToken()+"\t\t"+st.nextToken()+"\t\t|");
                 }
-                
             }	    		
-            System.out.println("|	                                            	                                   |");
-            System.out.println(" -------------------------------------------------------------------------------------- ");
-            
+            System.out.println("|	                                            	                                                        |");
+            System.out.println(" --------------------------------------------------------------------------------------------------------------- ");
+           
         br.close();
-        System.out.println("Enter the new Name: ");
-        newName = input.nextLine();    		
+        
+        while(check){
+            System.out.println("Enter the new Name: ");
+            newName = input.nextLine();  
+
+            if(check_special(newName))
+                System.out.println("Invalid Name!");
+            else
+                check = false;
+        }
+
         System.out.println("Enter the new Address: ");
         newAddr = input.nextLine();
+
+        check = true;
 
         while(check){
         System.out.println("Enter the new Contact No. :");
         newContact = input.next();
 
-        if (newContact.length() == 11)
+        if (newContact.length() == 11 && newContact.substring(0,2).equals("03") && !check_special(newContact))
             check = false;
         else
             System.out.println("Invalid Contact Number");
     }
 
-        System.out.println("Enter the new Total Cost: ");
-        newCost = input.nextLine();  
+        check = false;
+
+        
+        do {
+            System.out.println("Enter the new Total Cost: ");
+            try {
+                newC = input.nextInt();
+                check = true;
+            }
+            catch (InputMismatchException e) {
+                System.out.println("Must enter an integer!");
+                input.next();
+            }	
+        } while (!check);
+
+        check = true;
         
         BufferedReader br2 = new BufferedReader( new FileReader(db) );
             
         while( (record2 = br2.readLine() ) != null ) {    			
             if(record2.contains(ID)) {
-                bw.write(newName+"|"+ID+"|"+newAddr+"|"+newContact+"|"+newCost);
+                bw.write(newName+"|"+ID+"|"+newAddr+"|"+newContact+"|"+newC);
             } else {
                 bw.write(record2);	
             }    			
@@ -520,77 +569,73 @@ public class Hotel{
         System.out.println("Enter the Customer CNIC: ");
         ID = input.nextLine();
         
-        System.out.println(" ------------------------------------------------------------------------------------- ");
-        System.out.println("|	Name		CNIC 			Address 			Contact No.			Total Cost	  |");
-        System.out.println(" ------------------------------------------------------------------------------------- ");
-       
+        System.out.println(" --------------------------------------------------------------------------------------------------------------- ");
+        System.out.println("|\tName\t\tCNIC\t\t\tAddress\t\t\tContact No.\t\tTotal Cost\t|");
+        System.out.println(" --------------------------------------------------------------------------------------------------------------- ");
+        
         while( ( record = br.readLine() ) != null ) {
             
             StringTokenizer st = new StringTokenizer(record,"|");
             if( record.contains(ID) ) {
-                System.out.println("|	"+st.nextToken()+"	"+st.nextToken()+" 		"+st.nextToken()+" 		"+st.nextToken()+"			"+st.nextToken()+"      |");
+                System.out.println("|\t"+st.nextToken()+"\t\t"+st.nextToken()+"\t\t"+st.nextToken()+"\t\t\t"+st.nextToken()+"\t\t"+st.nextToken()+"\t\t|");
             }
         }
         
-        System.out.println("|	                                            	                                   |");
-        System.out.println(" -------------------------------------------------------------------------------------- ");
-    
+        System.out.println("|	                                            	                                                        |");
+        System.out.println(" --------------------------------------------------------------------------------------------------------------- ");
+           
         br.close();
     }
 
     public static void admin_view_record() throws IOException{
             BufferedReader br = new BufferedReader( new FileReader("hotel_db.txt") );
-                
             String record;
                 
-            System.out.println(" ------------------------------------------------------------------------------------- ");
-            System.out.println("|	Name		CNIC 			Address 			Contact No.			Total Cost	  |");
-            System.out.println(" ------------------------------------------------------------------------------------- ");
-                   
+            System.out.println(" --------------------------------------------------------------------------------------------------------------- ");
+            System.out.println("|\tName\t\tCNIC\t\t\tAddress\t\t\tContact No.\t\tTotal Cost\t|");
+            System.out.println(" --------------------------------------------------------------------------------------------------------------- ");
+            
             while( (record = br.readLine() ) != null) {
                     
                 StringTokenizer st = new StringTokenizer(record,"|");
                     
-                System.out.println("|	"+st.nextToken()+"	"+st.nextToken()+" 		"+st.nextToken()+" 		"+st.nextToken()+"			"+st.nextToken()+"      |");
-        
+                System.out.println("|\t"+st.nextToken()+"\t\t"+st.nextToken()+"\t\t"+st.nextToken()+"\t\t\t"+st.nextToken()+"\t\t"+st.nextToken()+"\t\t|");
             }
-            System.out.println("|	                                            	                                   |");
-            System.out.println(" -------------------------------------------------------------------------------------- ");
+            System.out.println("|	                                            	                                                        |");
+            System.out.println(" --------------------------------------------------------------------------------------------------------------- ");
             br.close();    		
     }
 
     public static void admin_delete_record() throws IOException{
-    		Scanner input =  new Scanner(System.in);
-    		String ID, record;
+    	Scanner input =  new Scanner(System.in);
+    	String ID, record;
     		
-    		File tempDB = new File("hotel_db_temp.txt");
-    		File db = new File("hotel_db.txt");
+    	File tempDB = new File("hotel_db_temp.txt");
+    	File db = new File("hotel_db.txt");
     		
     		
-    		BufferedReader br = new BufferedReader( new FileReader( db ) );
-    		BufferedWriter bw = new BufferedWriter( new FileWriter( tempDB ) );
+    	BufferedReader br = new BufferedReader( new FileReader( db ) );
+    	BufferedWriter bw = new BufferedWriter( new FileWriter( tempDB ) );
     		
-            System.out.println(" ---------------------------------------------------------- ");
-    		System.out.println("\t\t DELETE CUSTOMER RECORD\n");
-            System.out.println(" ---------------------------------------------------------- ");
+        System.out.println(" ---------------------------------------------------------- ");
+    	System.out.println("\t\t DELETE CUSTOMER RECORD\n");
+        System.out.println(" ---------------------------------------------------------- ");
 
-    		System.out.println("Enter the Customer's CNIC: ");
-    		ID =  input.nextLine();
+    	System.out.println("Enter the Customer's CNIC: ");
+    	ID =  input.nextLine();
     		
     		
-    		while( ( record = br.readLine() ) != null ) {
-    			
-    			if( record.contains(ID) ) 
-    				continue;
-   
-    			bw.write(record);
-    			bw.flush();
-    			bw.newLine();
- 
-    		}
+    	while( ( record = br.readLine() ) != null ) {	
+    		if( record.contains(ID) ) 
+                continue;
+                
+    		bw.write(record);
+    		bw.flush();
+    		bw.newLine();
+    	}
     		
-    		br.close();
-    		bw.close();
+    	    br.close();
+    	    bw.close();
     		
     		db.delete();
     		
@@ -600,17 +645,38 @@ public class Hotel{
 
     public static void admin_panel(){
         Scanner input = new Scanner(System.in);
-        String userName, password;
+        String userName = "", password = "";
         boolean check = true;
         char ch;
         try {
+            while(check){
             System.out.println("Enter Username: ");
             userName = input.next();
+
+            if(branch == '1'){
+                if(userName.trim().equals("admin-isb"))
+                    check = false;
+                else
+                    System.out.println("Invalid Username!");
+            } else if(branch == '2'){
+                if(userName.trim().equals("admin-lhr"))
+                    check = false;
+                else
+                    System.out.println("Invalid Username!");
+            } else if(branch == '3'){
+                if(userName.trim().equals("admin-khi"))
+                    check = false;
+                else
+                    System.out.println("Invalid Username!");
+            }
+        }   
+
             System.out.println("Enter Password: ");
             password = input.next();
-            if (userName.trim().equals("admin") && password.trim().equals("admin")) {
+            if(password.trim().equals("admin")){
                 System.out.println();
                 System.out.println("Hello " + userName);
+                check = true;
                 while(check){
                     System.out.println();
                     System.out.println("1. Update Record");
@@ -637,13 +703,13 @@ public class Hotel{
                         e.printStackTrace();
                     }
                 }
-             } else
-                System.out.println(" Invalid user... ");
-        }
-         catch (InputMismatchException e) {
+        } else
+            System.out.println("Invalid User!");
+    }
+        catch (InputMismatchException e) {
             System.out.println("Invalid Input!");
             input.next();
-         }	
+        }	
     }
 
     public static void main_menu_customer(){
@@ -715,7 +781,7 @@ public class Hotel{
     }
     public static void main(String[] args){
         Scanner input = new Scanner(System.in);
-        char branch, confirm = 'y';
+        char confirm = 'y';
         System.out.println();
         System.out.println(" ---------------------------------------------------------------- ");
         System.out.println("                 WELCOME TO OUR HOTEL           ");
@@ -745,8 +811,3 @@ public class Hotel{
         panels();
     }
 }
-
-/**
- * 
- * contact number to string
- */
